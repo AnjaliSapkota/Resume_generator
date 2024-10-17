@@ -1,0 +1,7 @@
+Flask
+Flask-Cors
+Flask-RESTful
+Flask-Swagger-UI
+beautifulsoup4
+PyMuPDF
+pylatex
