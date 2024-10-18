@@ -2,26 +2,41 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resume Builder</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>Build Your Resume</h1>
-    <form action="{{ url_for('generate_resume') }}" method="POST">
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" required><br>
+    <div class="container">
+        <h1>Resume Builder</h1>
 
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required><br>
+        <form action="{{ url_for('generate_resume') }}" method="POST">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
 
-        <label for="experience">Experience:</label>
-        <textarea id="experience" name="experience" required></textarea><br>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
 
-        <label for="education">Education:</label>
-        <textarea id="education" name="education" required></textarea><br>
+            <label for="phone">Contact:</label>
+            <input type="phone" id="phone" name="phone" required>
 
-        <button type="submit">Generate Resume</button>
-    </form>
+            <label for="profile">Profile:</label>
+            <textarea id="profile" name="profile" placeholder="Profile Summary"></textarea>
+
+            <label for="projects">Projects:</label>
+            <textarea id="projects" name="projects" placeholder="Project Experiences"></textarea>
+
+            <label for="skills">Skills:</label>
+            <textarea id="skills" name="skills" required></textarea>
+
+            <label for="training">Training and Certification:</label>
+            <textarea id="training" name="training" placeholder="Training and Certifications"></textarea>
+
+            <label for="education">Education:</label>
+            <textarea id="education" name="education" required></textarea>
+
+            <button type="submit">Generate Resume</button>
+        </form>
+    </div>
 </body>
 </html>

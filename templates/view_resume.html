@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Resume is Ready!</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h2 style="text-align: center;">Your Resume is Ready!</h2>
+    <div style="display: flex; justify-content: center;">
+        <iframe src="/static/{{ pdf_filename }}" width="80%" height="500px"></iframe>
+    </div>
+    <div style="text-align: center; margin-top: 20px;">
+        <a href="/download_resume/{{ pdf_filename }}" style="text-decoration: none; color: #007BFF;">Download your Resume</a>
+    </div>
+    
+</body>
+</html>

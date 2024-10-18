@@ -1,41 +1,73 @@
-from flask import Flask, render_template, request, redirect, url_for, send_file
-from util.pdfImage import generate_pdf  # Assuming this utility generates a PDF
+import re
+from flask import Flask, render_template, request, redirect, url_for, session, flash, send_file
+from util.pdfImage import generate_pdf
 import os
 
 app = Flask(__name__)
+app.secret_key = os.environ.get('SECRET_KEY', 'supersecretkey')
 
 @app.route('/')
 def index():
     return render_template('resume_form.html')
 
-@app.route('/generate', methods=['POST'])
+@app.route('/generate_resume', methods=['POST'])
 def generate_resume():
     if request.method == 'POST':
-        # Get form data
-        name = request.form['name']
-        email = request.form['email']
-        experience = request.form['experience']
-        education = request.form['education']
+        name = request.form.get('name')
+        email = request.form.get('email')
+        projects = request.form.get('projects')
+        education = request.form.get('education')
+        profile = request.form.get('profile')
+        skills = request.form.get('skills')
+        phone = request.form.get('phone')
+        training = request.form.get('training')
 
-        # Generate the resume PDF
-        pdf_filename = generate_pdf(name, email, experience, education)  # Ensure this returns the filename
+        # Basic validation
+        if not name or not email:
+            flash("Name and email are required fields.", "error")
+            return redirect(url_for('index'))
 
-        # Redirect to a page that shows the user their generated resume
-        return redirect(url_for('view_resume', pdf_filename=os.path.basename(pdf_filename)))  # Use basename for cleaner URLs
+        # Validate email
+        email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+        if not re.match(email_regex, email):
+            flash("Invalid email format!", "error")
+            return redirect(url_for('index'))
+
+        # Store form data in session
+        session['name'] = name
+        session['email'] = email
+        session['projects'] = projects
+        session['education'] = education
+        session['profile'] = profile
+        session['skills'] = skills
+        session['phone'] = phone
+        session['training'] = training
+
+        try:
+            pdf_filename = generate_pdf(name, email, projects, education, profile, skills, phone, training)
+        except Exception as e:
+            flash(f"Failed to generate PDF: {str(e)}", "error")
+            return redirect(url_for('index'))
+
+        return render_template('view_resume.html', pdf_filename=os.path.basename(pdf_filename))
 
 @app.route('/view_resume/<pdf_filename>')
 def view_resume(pdf_filename):
-    # Provide a link to view the PDF in the browser and also download it
-    return f'''
-    <h2>Your Resume is Ready!</h2>
-    <iframe src="/static/{pdf_filename}" width="600" height="400"></iframe>  <!-- Embed the PDF -->
-    <p><a href="/download_resume/{pdf_filename}">Download your Resume</a></p>  <!-- Provide a download link -->
-    '''
+    pdf_path = os.path.join('static', pdf_filename)
+    if not os.path.exists(pdf_path):
+        flash("Resume not found!", "error")
+        return redirect(url_for('index'))
+
+    return send_file(pdf_path, as_attachment=False)
 
 @app.route('/download_resume/<pdf_filename>')
 def download_resume(pdf_filename):
-    # Serve the PDF for download
-    return send_file(os.path.join('static', pdf_filename), as_attachment=True)
+    pdf_path = os.path.join('static', pdf_filename)
+    if not os.path.exists(pdf_path):
+        flash("File not found!", "error")
+        return redirect(url_for('index'))
+
+    return send_file(pdf_path, as_attachment=True)
 
 if __name__ == '__main__':
     app.run(debug=True)
