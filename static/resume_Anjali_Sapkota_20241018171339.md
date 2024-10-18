@@ -1,21 +1,21 @@
 # Anjali Sapkota's Resume
 
-**Email**: sapkota@gmail.com
+**Email**: s@gmail.vpm
 
-**Phone**: HALO
+**Phone**: 44444
 
 ## Profile
-Bachelor
+s
 
 ## Skills
-I am a student
+s
 
 ## Education
-Python
+s
 
 ## Projects
-98222
+s
 
 ## Certifications & Training
-WQU
+s
 

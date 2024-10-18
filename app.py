@@ -1,9 +1,9 @@
-# app.py
 import re
 from flask import Flask, render_template, request, redirect, url_for, session, flash, send_file
 from util.pdfImage import generate_pdf
 from util.markdownResume import generate_markdown  # Import the markdown function
 import os
+import markdown  # Import the markdown library
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'supersecretkey')
@@ -48,10 +48,13 @@ def generate_resume():
         try:
             # Generate both PDF and Markdown files
             pdf_filename = generate_pdf(name, email, phone, profile, skills, education, projects, training)
-            markdown_filename = generate_markdown(name, email, projects, education, profile, skills, phone, training)
+            markdown_filename = generate_markdown(name, email, phone, profile, skills, education, projects, training)
         except Exception as e:
             flash(f"Failed to generate resume: {str(e)}", "error")
             return redirect(url_for('index'))
+
+        # Clear the session after generating the resume
+        session.clear()
 
         # Pass both PDF and Markdown filenames to the template
         return render_template('view_resume.html', pdf_filename=os.path.basename(pdf_filename), markdown_filename=os.path.basename(markdown_filename))
@@ -69,7 +72,12 @@ def view_resume(pdf_filename, markdown_filename):
         flash("Markdown file not found!", "error")
         return redirect(url_for('index'))
 
-    return render_template('view_resume.html', pdf_filename=pdf_filename, markdown_filename=markdown_filename)
+    # Read and convert the Markdown file to HTML
+    with open(markdown_path, 'r') as md_file:
+        markdown_content = md_file.read()
+        html_content = markdown.markdown(markdown_content)
+
+    return render_template('view_resume.html', pdf_filename=pdf_filename, markdown_filename=markdown_filename, markdown_html=html_content)
 
 @app.route('/download_resume/<filename>')
 def download_resume(filename):
