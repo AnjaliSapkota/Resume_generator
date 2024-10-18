@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from util.pdfImage import generate_pdf
 from util.markdownResume import generate_markdown  # Import the markdown function
 import os
-import markdown  # Import the markdown library
+import markdown2  # Import markdown2 to convert markdown to HTML
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'supersecretkey')
@@ -54,12 +54,18 @@ def generate_resume():
         # Generate both PDF and Markdown files
         pdf_filename = generate_pdf(name, email, phone, profile, skills, education, projects, training)
         markdown_filename = generate_markdown(name, email, phone, profile, skills, education, projects, training)
+
+        # Convert the Markdown file content to HTML
+        with open(markdown_filename, 'r') as md_file:
+            markdown_content = md_file.read()
+            html_content = markdown2.markdown(markdown_content)  # Convert Markdown to HTML
+
     except Exception as e:
         flash(f"Failed to generate resume: {str(e)}", "error")
         return redirect(url_for('index'))
 
     # Pass both PDF and Markdown filenames to the template
-    return render_template('view_resume.html', pdf_filename=os.path.basename(pdf_filename), markdown_filename=os.path.basename(markdown_filename))
+    return render_template('view_resume.html', pdf_filename=os.path.basename(pdf_filename), html_content=html_content)
 
 @app.route('/download_resume/<filename>')
 def download_resume(filename):

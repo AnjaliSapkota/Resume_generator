@@ -1,22 +1,20 @@
 from flask import Flask, jsonify, request, send_file, session
-from util.pdfImage import generate_pdf  # Utility to generate a PDF
+from util.pdfImage import generate_pdf 
+from util.markdownResume import generate_markdown 
 import os
 import re
 
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', 'supersecretkey')  # Use environment variable for production
-
+app.secret_key = os.environ.get('SECRET_KEY', 'supersecretkey') 
 @app.route('/')
 def home():
     return jsonify({"message": "Welcome to the Resume Builder API!"})
 
 @app.route('/generate_resume', methods=['POST'])
 def generate_resume_api():
-    # API endpoint to generate a resume
     if request.method == 'POST':
         data = request.get_json()
 
-        # Required fields and validation
         required_fields = ['name', 'email', 'projects', 'education', 'profile', 'skills', 'phone', 'training']
         missing_fields = [field for field in required_fields if field not in data]
         if missing_fields:
@@ -31,7 +29,6 @@ def generate_resume_api():
         phone = data.get('phone')
         training = data.get('training')
 
-        # Improved Email validation using regex
         email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
         if not re.match(email_regex, email):
             return jsonify({"error": "Invalid email format"}), 400
@@ -46,25 +43,32 @@ def generate_resume_api():
         session['phone'] = phone
         session['training'] = training
 
-        # Generate the resume PDF
+        # Generate the resume PDF and Markdown
         try:
             pdf_filename = generate_pdf(name, email, projects, education, profile, skills, phone, training)
-        except Exception as e:
-            return jsonify({"error": f"Failed to generate PDF: {str(e)}"}), 500
+            markdown_content = generate_markdown(name, email, projects, education, profile, skills, phone, training)
 
-        # Respond with the PDF download link
+            # Save markdown content to a file
+            markdown_filename = f"resume_{name.replace(' ', '_')}.md"
+            with open(os.path.join('static', markdown_filename), 'w') as f:
+                f.write(markdown_content)
+
+        except Exception as e:
+            return jsonify({"error": f"Failed to generate resume: {str(e)}"}), 500
+
+        # Respond with the download links
         return jsonify({
             "message": "Resume generated successfully!",
-            "download_link": f"/download_resume/{os.path.basename(pdf_filename)}"
+            "download_link": f"/download_resume/{os.path.basename(pdf_filename)}",
+            "markdown_link": f"/download_resume/{markdown_filename}"
         })
 
-@app.route('/download_resume/<pdf_filename>')
-def download_resume(pdf_filename):
-    # Serve the PDF for download
-    pdf_path = os.path.join('static', pdf_filename)
-    if not os.path.exists(pdf_path):
+@app.route('/download_resume/<filename>')
+def download_resume(filename):
+    file_path = os.path.join('static', filename)
+    if not os.path.exists(file_path):
         return jsonify({"error": "File not found"}), 404
-    return send_file(pdf_path, as_attachment=True)
+    return send_file(file_path, as_attachment=True)
 
 if __name__ == '__main__':
     app.run(debug=True)

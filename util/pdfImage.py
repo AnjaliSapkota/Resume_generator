@@ -4,108 +4,76 @@ from reportlab.lib import colors
 from datetime import datetime
 
 def generate_pdf(name, email, phone, profile, skills, education, projects, training):
-    # Define file path for the PDF
     pdf_filename = f"static/resume_{name.replace(' ', '_')}_{datetime.now().strftime('%Y%m%d%H%M%S')}.pdf"
     
-    # Set up the canvas for the PDF
     c = canvas.Canvas(pdf_filename, pagesize=letter)
     width, height = letter
 
-    # Font settings
     title_font = "Helvetica-Bold"
     text_font = "Helvetica"
 
-    # --- Name on Top Centered ---
+    # Name 
     c.setFont(title_font, 24)
     text_width = c.stringWidth(name, title_font, 24)
     c.drawString((width - text_width) / 2, 750, name)
 
-    # --- Email and Phone Below Name (Centered) ---
+    # Email and Phone
     c.setFont(text_font, 12)
     contact_info = f"{email}   |   {phone}"
     contact_width = c.stringWidth(contact_info, text_font, 12)
     c.drawString((width - contact_width) / 2, 735, contact_info)
 
-    # --- Horizontal Line under Contact Info ---
+    # Horizontal Line
     c.setStrokeColor(colors.black)
     c.setLineWidth(1)
     c.line(50, 710, width - 50, 710)
 
-    # Define positions for the two columns
-    column_1_x = 50
-    column_2_x = 320
-    vertical_line_x = 300
-    current_y = 690
-
-    # --- Add Vertical Line between the Columns ---
-    c.line(vertical_line_x, 690, vertical_line_x, 100)  # Adjusted to not touch the horizontal line
-
-    # --- Column 1: Profile and Skills ---
-    # Section: Profile (Underlined)
-    c.setFont(title_font, 16)
-    c.drawString(column_1_x, current_y, "PROFILE")
-    c.line(column_1_x, current_y - 2, column_1_x + 60, current_y - 2)
-    current_y -= 20
+    # Profile Summary 
+    c.setFont(title_font, 18)
+    c.drawString(50, 680, "Profile Summary:")
     c.setFont(text_font, 12)
-    profile_text = c.beginText(column_1_x, current_y)
-    for line in profile.split('\n'):
-        profile_text.textLine(line)
-    c.drawText(profile_text)
-    current_y -= 100  # Adjust space
+    c.drawString(50, 660, profile)
 
-    # Section: Skills (Underlined)
-    c.setFont(title_font, 16)
-    c.drawString(column_1_x, current_y, "SKILLS")
-    c.line(column_1_x, current_y - 2, column_1_x + 60, current_y - 2)  # Underline
-    current_y -= 20
-    skills_text = c.beginText(column_1_x, current_y)
-    for skill in skills.split(','):
-        skills_text.textLine(f"{skill.strip()}")
-    c.drawText(skills_text)
-    current_y -= 100
-
-    # --- Column 2: Education, Certifications, and Professional Experience ---
-    current_y = 690  # Reset Y for second column
-    # Section: Education (Underlined)
-    c.setFont(title_font, 16)
-    c.drawString(column_2_x, current_y, "EDUCATION")
-    c.line(column_2_x, current_y - 2, column_2_x + 100, current_y - 2)  # Underline
-    current_y -= 20
+    # Skills 
+    c.setFont(title_font, 18)
+    c.drawString(50, 620, "Skills:")
     c.setFont(text_font, 12)
-    education_text = c.beginText(column_2_x, current_y)
-    for line in education.split('\n'):
-        education_text.textLine(line)
-    c.drawText(education_text)
-    current_y -= 100  # Adjust space
+    skills_list = skills.splitlines()
+    y_position = 600
+    for skill in skills_list:
+        c.drawString(50, y_position, f"- {skill}")
+        y_position -= 15
 
-    # Section: Certifications (Underlined)
-    c.setFont(title_font, 16)
-    c.drawString(column_2_x, current_y, "CERTIFICATIONS")
-    c.line(column_2_x, current_y - 2, column_2_x + 130, current_y - 2)  # Underline
-    current_y -= 20
-    certifications_text = c.beginText(column_2_x, current_y)
-    for line in training.split('\n'):
-        certifications_text.textLine(line)
-    c.drawText(certifications_text)
-    current_y -= 100
+    # Education
+    c.setFont(title_font, 18)
+    c.drawString(50, y_position - 20, "Education:")
+    c.setFont(text_font, 12)
+    education_list = education.splitlines()
+    y_position -= 40
+    for edu in education_list:
+        c.drawString(50, y_position, f"- {edu}")
+        y_position -= 15
 
-    # Section: Professional Experience (Underlined)
-    c.setFont(title_font, 16)
-    c.drawString(column_2_x, current_y, "PROJECT EXPERIENCE")
-    c.line(column_2_x, current_y - 2, column_2_x + 180, current_y - 2)  # Underline
-    current_y -= 20
-    experience_text = c.beginText(column_2_x, current_y)
-    for project in projects.split('\n'):
-        experience_text.textLine(project)
-    c.drawText(experience_text)
+    # Projects
+    c.setFont(title_font, 18)
+    c.drawString(50, y_position - 20, "Projects:")
+    c.setFont(text_font, 12)
+    projects_list = projects.splitlines()
+    y_position -= 40
+    for project in projects_list:
+        c.drawString(50, y_position, f"- {project}")
+        y_position -= 15
 
-    # Footer section
-    c.setFont("Helvetica-Oblique", 10)
-    c.setFillColor(colors.grey)
-    c.drawString(50, 50, "Generated with ReportLab - Python PDF Library")
+    # Training 
+    c.setFont(title_font, 18)
+    c.drawString(50, y_position - 20, "Training:")
+    c.setFont(text_font, 12)
+    training_list = training.splitlines()
+    y_position -= 40
+    for train in training_list:
+        c.drawString(50, y_position, f"- {train}")
+        y_position -= 15
 
-    # Save the PDF
-    c.showPage()
     c.save()
 
     return pdf_filename
