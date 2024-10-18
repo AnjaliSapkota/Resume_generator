@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Resume</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Your Generated Resume</h2>
+        <div class="resume-content">
+            {{ html_content|safe }}  <!-- Display the HTML content here -->
+        </div>
+        <div>
+            <h3>Download Options:</h3>
+            <a href="{{ url_for('download_resume', filename=pdf_filename) }}">Download PDF</a>
+            <a href="{{ url_for('download_resume', filename=markdown_filename) }}">Download Markdown</a>
+        </div>
+    </div>
+</body>
+</html>
