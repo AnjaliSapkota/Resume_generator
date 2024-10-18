@@ -1,6 +1,8 @@
+# app.py
 import re
 from flask import Flask, render_template, request, redirect, url_for, session, flash, send_file
 from util.pdfImage import generate_pdf
+from util.markdownResume import generate_markdown  # Import the markdown function
 import os
 
 app = Flask(__name__)
@@ -15,11 +17,11 @@ def generate_resume():
     if request.method == 'POST':
         name = request.form.get('name')
         email = request.form.get('email')
-        projects = request.form.get('projects')
-        education = request.form.get('education')
+        phone = request.form.get('phone')
         profile = request.form.get('profile')
         skills = request.form.get('skills')
-        phone = request.form.get('phone')
+        education = request.form.get('education')
+        projects = request.form.get('projects')
         training = request.form.get('training')
 
         # Basic validation
@@ -36,38 +38,47 @@ def generate_resume():
         # Store form data in session
         session['name'] = name
         session['email'] = email
-        session['projects'] = projects
-        session['education'] = education
+        session['phone'] = phone
         session['profile'] = profile
         session['skills'] = skills
-        session['phone'] = phone
+        session['education'] = education
+        session['projects'] = projects
         session['training'] = training
 
         try:
-            pdf_filename = generate_pdf(name, email, projects, education, profile, skills, phone, training)
+            # Generate both PDF and Markdown files
+            pdf_filename = generate_pdf(name, email, phone, profile, skills, education, projects, training)
+            markdown_filename = generate_markdown(name, email, projects, education, profile, skills, phone, training)
         except Exception as e:
-            flash(f"Failed to generate PDF: {str(e)}", "error")
+            flash(f"Failed to generate resume: {str(e)}", "error")
             return redirect(url_for('index'))
 
-        return render_template('view_resume.html', pdf_filename=os.path.basename(pdf_filename))
+        # Pass both PDF and Markdown filenames to the template
+        return render_template('view_resume.html', pdf_filename=os.path.basename(pdf_filename), markdown_filename=os.path.basename(markdown_filename))
 
-@app.route('/view_resume/<pdf_filename>')
-def view_resume(pdf_filename):
+@app.route('/view_resume/<pdf_filename>/<markdown_filename>')
+def view_resume(pdf_filename, markdown_filename):
     pdf_path = os.path.join('static', pdf_filename)
+    markdown_path = os.path.join('static', markdown_filename)
+    
     if not os.path.exists(pdf_path):
         flash("Resume not found!", "error")
         return redirect(url_for('index'))
+    
+    if not os.path.exists(markdown_path):
+        flash("Markdown file not found!", "error")
+        return redirect(url_for('index'))
 
-    return send_file(pdf_path, as_attachment=False)
+    return render_template('view_resume.html', pdf_filename=pdf_filename, markdown_filename=markdown_filename)
 
-@app.route('/download_resume/<pdf_filename>')
-def download_resume(pdf_filename):
-    pdf_path = os.path.join('static', pdf_filename)
-    if not os.path.exists(pdf_path):
+@app.route('/download_resume/<filename>')
+def download_resume(filename):
+    file_path = os.path.join('static', filename)
+    if not os.path.exists(file_path):
         flash("File not found!", "error")
         return redirect(url_for('index'))
 
-    return send_file(pdf_path, as_attachment=True)
+    return send_file(file_path, as_attachment=True)
 
 if __name__ == '__main__':
     app.run(debug=True)

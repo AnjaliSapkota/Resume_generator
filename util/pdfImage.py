@@ -3,7 +3,7 @@ from reportlab.pdfgen import canvas
 from reportlab.lib import colors
 from datetime import datetime
 
-def generate_pdf(name, email, phone, projects, education, profile, skills, training):
+def generate_pdf(name, email, phone, profile, skills, education, projects, training):
     # Define file path for the PDF
     pdf_filename = f"static/resume_{name.replace(' ', '_')}_{datetime.now().strftime('%Y%m%d%H%M%S')}.pdf"
     
@@ -37,14 +37,14 @@ def generate_pdf(name, email, phone, projects, education, profile, skills, train
     vertical_line_x = 300
     current_y = 690
 
-    # --- Add Vertical Line between the Columns (not touching horizontal line) ---
+    # --- Add Vertical Line between the Columns ---
     c.line(vertical_line_x, 690, vertical_line_x, 100)  # Adjusted to not touch the horizontal line
 
     # --- Column 1: Profile and Skills ---
     # Section: Profile (Underlined)
     c.setFont(title_font, 16)
     c.drawString(column_1_x, current_y, "PROFILE")
-    c.line(column_1_x, current_y - 2, column_1_x + 60, current_y - 2)  # Underline
+    c.line(column_1_x, current_y - 2, column_1_x + 60, current_y - 2)
     current_y -= 20
     c.setFont(text_font, 12)
     profile_text = c.beginText(column_1_x, current_y)
@@ -60,7 +60,7 @@ def generate_pdf(name, email, phone, projects, education, profile, skills, train
     current_y -= 20
     skills_text = c.beginText(column_1_x, current_y)
     for skill in skills.split(','):
-        skills_text.textLine(f"- {skill.strip()}")
+        skills_text.textLine(f"{skill.strip()}")
     c.drawText(skills_text)
     current_y -= 100
 
@@ -91,7 +91,7 @@ def generate_pdf(name, email, phone, projects, education, profile, skills, train
 
     # Section: Professional Experience (Underlined)
     c.setFont(title_font, 16)
-    c.drawString(column_2_x, current_y, "PROFESSIONAL EXPERIENCE")
+    c.drawString(column_2_x, current_y, "PROJECT EXPERIENCE")
     c.line(column_2_x, current_y - 2, column_2_x + 180, current_y - 2)  # Underline
     current_y -= 20
     experience_text = c.beginText(column_2_x, current_y)
