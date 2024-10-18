@@ -1,25 +1,25 @@
-# Anjali Sapkota
+# a
 
 **Email**: sapkotaanjali123@gmail.com
-**Phone**: 9813590861
+**Phone**: s
 
 
 ---
 
 ### Profile Summary
-aa
+s
 
 ### Skills
-- aaaaa
+- s
 
 ### Education
-a
+ssa
 
 ### Projects
-aa
+sas
 
 ### Certifications & Training
-- aa
+- as
 
 
 ---

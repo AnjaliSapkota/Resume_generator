@@ -24,7 +24,6 @@ def step():
     session['projects'] = request.form.get('projects')
     session['training'] = request.form.get('training')
 
-    # Redirect to the generate resume function
     return redirect(url_for('generate_resume'))
 
 @app.route('/generate_resume')
@@ -51,7 +50,6 @@ def generate_resume():
         return redirect(url_for('index'))
 
     try:
-        # Generate both PDF and Markdown files
         pdf_filename = generate_pdf(name, email, phone, profile, skills, education, projects, training)
         markdown_filename = generate_markdown(name, email, phone, profile, skills, education, projects, training)
 
@@ -64,7 +62,6 @@ def generate_resume():
         flash(f"Failed to generate resume: {str(e)}", "error")
         return redirect(url_for('index'))
 
-    # Pass both PDF and Markdown filenames to the template
     return render_template('view_resume.html', pdf_filename=os.path.basename(pdf_filename), html_content=html_content)
 
 @app.route('/download_resume/<filename>')

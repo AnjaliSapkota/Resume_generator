@@ -14,9 +14,9 @@ def generate_markdown(name, email, phone, profile, skills, education, projects, 
         skills_list = skills.splitlines()
         for skill in skills_list:
             skill = skill.strip()
-            if skill:  # Ensure the skill is not empty
-                markdown_content += f"- {skill}\n"  # Adding bullet point
-        markdown_content += "\n"  # Add an extra line for spacing
+            if skill:  
+                markdown_content += f"- {skill}\n"  
+        markdown_content += "\n"  
 
     if education:
         markdown_content += "### Education\n"
@@ -33,13 +33,12 @@ def generate_markdown(name, email, phone, profile, skills, education, projects, 
         training_list = training.splitlines()
         for cert in training_list:
             cert = cert.strip()
-            if cert:  # Ensure the certification is not empty
-                markdown_content += f"- {cert}\n"  # Adding bullet point
-        markdown_content += "\n"  # Add an extra line for spacing
+            if cert:  
+                markdown_content += f"- {cert}\n" 
+        markdown_content += "\n"  
 
     markdown_content += "\n---\n\n"
 
-    # Saving the Markdown file
     markdown_output = f'static/{name}_resume.md'
     with open(markdown_output, 'w') as file:
         file.write(markdown_content)
