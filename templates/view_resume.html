@@ -8,13 +8,12 @@
 </head>
 <body>
     <div class="container">
-        <!-- <h2>Your Generated Resume</h2> -->
         <div class="resume-content">
-            {{ html_content|safe }}  
+            {{ html_content|safe }}
         </div>
         <div>
             <h3>Download Options:</h3>
-            <a href="{{ url_for('download_resume', filename=pdf_filename) }}">Download PDF</a>
+            <a href="{{ url_for('download_pdf') }}">Download Resume as PDF</a>
         </div>
     </div>
 </body>
