@@ -6,18 +6,26 @@ body {
 }
 
 .container {
-    width: 80%;
-    margin: 0 auto;
-    background-color: white;
+    max-width: 600px;
+    margin: auto;
     padding: 20px;
+    border: 1px solid #ddd;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    margin-top: 30px;
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
     text-align: center;
     color: #333;
+}
+
+h3 {
+    color: #333;
+}
+
+.form-step {
+    margin-bottom: 20px;
 }
 
 form {
@@ -26,7 +34,7 @@ form {
     gap: 15px;
 }
 
-label {
+.label {
     font-weight: bold;
     color: #555;
 }

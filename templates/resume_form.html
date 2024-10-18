@@ -8,35 +8,91 @@
 </head>
 <body>
     <div class="container">
-        <h1>Resume Builder</h1>
+        <h2>Let's get started!</h2>
+        <form method="POST" action="{{ url_for('step') }}">
+            <div id="step1" class="form-step">
+                <h3>Personal Information</h3>
+                <div class="form-group">
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <button type="button" onclick="nextStep()">Next</button>
+            </div>
 
-        <form action="{{ url_for('generate_resume') }}" method="POST">
-            <label for="name">Name:</label>
-            <input type="text" id="name" name="name" required>
+            <div id="step2" class="form-step" style="display:none;">
+                <h3>Contact Information</h3>
+                <div class="form-group">
+                    <label for="phone">Phone:</label>
+                    <input type="text" id="phone" name="phone">
+                </div>
+                <div class="form-group">
+                    <label for="profile">Profile Summary:</label>
+                    <textarea id="profile" name="profile"></textarea>
+                </div>
+                <button type="button" onclick="prevStep()">Previous</button>
+                <button type="button" onclick="nextStep()">Next</button>
+            </div>
 
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
+            <div id="step3" class="form-step" style="display:none;">
+                <h3>Skills & Education</h3>
+                <div class="form-group">
+                    <label for="skills">Skills:</label>
+                    <textarea id="skills" name="skills"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="education">Education:</label>
+                    <textarea id="education" name="education"></textarea>
+                </div>
+                <button type="button" onclick="prevStep()">Previous</button>
+                <button type="button" onclick="nextStep()">Next</button>
+            </div>
 
-            <label for="phone">Contact:</label>
-            <input type="phone" id="phone" name="phone" required>
-
-            <label for="profile">Profile:</label>
-            <textarea id="profile" name="profile" placeholder="Profile Summary"></textarea>
-
-            <label for="skills">Skills:</label>
-            <textarea id="skills" name="skills" required></textarea>
-
-            <label for="education">Education:</label>
-            <textarea id="education" name="education" required></textarea>
-
-            <label for="projects">Projects:</label>
-            <textarea id="projects" name="projects" placeholder="Project Experiences"></textarea>
-
-            <label for="training">Training and Certification:</label>
-            <textarea id="training" name="training" placeholder="Training and Certifications"></textarea>
-
-            <button type="submit">Generate Resume</button>
+            <div id="step4" class="form-step" style="display:none;">
+                <h3>Projects & Training</h3>
+                <div class="form-group">
+                    <label for="projects">Projects:</label>
+                    <textarea id="projects" name="projects"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="training">Training:</label>
+                    <textarea id="training" name="training"></textarea>
+                </div>
+                <button type="button" onclick="prevStep()">Previous</button>
+                <button type="submit">Submit</button>
+            </div>
         </form>
     </div>
+
+    <script>
+        let currentStep = 0;
+        const steps = document.querySelectorAll('.form-step');
+
+        function showStep(step) {
+            steps.forEach((s, index) => {
+                s.style.display = index === step ? 'block' : 'none';
+            });
+        }
+
+        function nextStep() {
+            if (currentStep < steps.length - 1) {
+                currentStep++;
+                showStep(currentStep);
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 0) {
+                currentStep--;
+                showStep(currentStep);
+            }
+        }
+
+        // Show the first step on load
+        showStep(currentStep);
+    </script>
 </body>
 </html>
