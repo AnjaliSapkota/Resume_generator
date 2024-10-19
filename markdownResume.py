@@ -3,7 +3,7 @@ def generate_markdown(name, email, phone, profile, skills, education, projects, 
     markdown_content += f"**Email**: {email}\n"
     markdown_content += f"**Phone**: {phone}\n\n"
 
-    markdown_content += "\n---\n\n"
+    markdown_content += "\n---\n\n" #For the vertical line
 
     if profile:
         markdown_content += "### Profile Summary\n"
