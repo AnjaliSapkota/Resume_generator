@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request, send_file, session
 from util.pdfImage import generate_pdf 
-from util.markdownResume import generate_markdown 
+from markdownResume import generate_markdown 
 import os
 import re
 
@@ -43,7 +43,6 @@ def generate_resume_api():
         session['phone'] = phone
         session['training'] = training
 
-        # Generate the resume PDF and Markdown
         try:
             pdf_filename = generate_pdf(name, email, projects, education, profile, skills, phone, training)
             markdown_content = generate_markdown(name, email, projects, education, profile, skills, phone, training)
@@ -56,11 +55,10 @@ def generate_resume_api():
         except Exception as e:
             return jsonify({"error": f"Failed to generate resume: {str(e)}"}), 500
 
-        # Respond with the download links
         return jsonify({
             "message": "Resume generated successfully!",
             "download_link": f"/download_resume/{os.path.basename(pdf_filename)}",
-            "markdown_link": f"/download_resume/{markdown_filename}"
+            # "markdown_link": f"/download_resume/{markdown_filename}"
         })
 
 @app.route('/download_resume/<filename>')
