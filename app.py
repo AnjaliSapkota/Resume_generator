@@ -9,24 +9,31 @@ from markdownResume import generate_markdown
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'supersecretkey')
 
+def sanitize_text(text):
+    return ''.join([i if ord(i) < 128 else ' ' for i in text])
+
 def wrap_text(text, max_width, c, margin, y_position):
-    """Helper function to wrap text within a specified width."""
-    words = text.split(' ')
-    lines = []
-    line = ""
+    """Helper function to wrap text within a specified width, handling newlines."""
+    paragraphs = sanitize_text(text).split('\n') 
+    for paragraph in paragraphs:
+        words = paragraph.split(' ')
+        lines = []
+        line = ""
 
-    for word in words:
-        if c.stringWidth(line + word + " ") <= max_width:
-            line += word + " "
-        else:
+        for word in words:
+            if c.stringWidth(line + word + " ") <= max_width:
+                line += word + " "
+            else:
+                lines.append(line)
+                line = word + " "
+        if line:
             lines.append(line)
-            line = word + " "
-    if line:
-        lines.append(line)
 
-    for wrapped_line in lines:
-        c.drawString(margin, y_position, wrapped_line)
-        y_position -= 15  # Move to next line height
+        for wrapped_line in lines:
+            c.drawString(margin, y_position, wrapped_line)
+            y_position -= 15
+
+        y_position -= 10
 
     return y_position
 
@@ -85,14 +92,14 @@ def generate_resume():
 
 @app.route('/download_pdf')
 def download_pdf():
-    name = session.get('name')
-    email = session.get('email')
-    phone = session.get('phone')
-    profile = session.get('profile')
-    skills = session.get('skills')
-    education = session.get('education')
-    projects = session.get('projects')
-    training = session.get('training')
+    name = sanitize_text(session.get('name'))
+    email = sanitize_text(session.get('email'))
+    phone = sanitize_text(session.get('phone'))
+    profile = sanitize_text(session.get('profile'))
+    skills = sanitize_text(session.get('skills'))
+    education = sanitize_text(session.get('education'))
+    projects = sanitize_text(session.get('projects'))
+    training = sanitize_text(session.get('training'))
 
     pdf_filename = f"{name.replace(' ', '_')}_resume.pdf"
     pdf_path = os.path.join('static', pdf_filename)
@@ -102,12 +109,10 @@ def download_pdf():
     margin = 50  
     y_position = height - margin  
 
-    # Name
     c.setFont("Helvetica-Bold", 24)
     c.drawString(margin, y_position, name)
     y_position -= 30
 
-    # Email and phone
     c.setFont("Helvetica", 12)
     c.drawString(margin, y_position, f"Email: {email}")
     y_position -= 20
@@ -117,57 +122,46 @@ def download_pdf():
     else:
         y_position -= 20
 
-    # Line separator
     c.line(margin, y_position, width - margin, y_position)
     y_position -= 30
 
-    # Profile Summary
     if profile:
         c.setFont("Helvetica-Bold", 14)
         c.drawString(margin, y_position, "Profile Summary:")
         y_position -= 20
         c.setFont("Helvetica", 12)
-        # Wrap text for profile summary
         y_position = wrap_text(profile, width - 2 * margin, c, margin, y_position)
         y_position -= 10
 
-    # Skills
     if skills:
         c.setFont("Helvetica-Bold", 14)
         c.drawString(margin, y_position, "Skills:")
         y_position -= 20
         c.setFont("Helvetica", 12)
-        # Wrap text for skills
         y_position = wrap_text(skills, width - 2 * margin, c, margin, y_position)
         y_position -= 10
 
-    # Education
     if education:
         c.setFont("Helvetica-Bold", 14)
         c.drawString(margin, y_position, "Education:")
         y_position -= 20
         c.setFont("Helvetica", 12)
-        # Wrap text for education
         y_position = wrap_text(education, width - 2 * margin, c, margin, y_position)
         y_position -= 10
 
-    # Projects
     if projects:
         c.setFont("Helvetica-Bold", 14)
         c.drawString(margin, y_position, "Projects:")
         y_position -= 20
         c.setFont("Helvetica", 12)
-        # Wrap text for projects
         y_position = wrap_text(projects, width - 2 * margin, c, margin, y_position)
         y_position -= 10
 
-    # Training & Certifications
     if training:
         c.setFont("Helvetica-Bold", 14)
         c.drawString(margin, y_position, "Training & Certifications:")
         y_position -= 20
         c.setFont("Helvetica", 12)
-        # Wrap text for training
         y_position = wrap_text(training, width - 2 * margin, c, margin, y_position)
 
     c.save()
