@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request, send_file, session
-from util.pdfImage import generate_pdf 
+# from util.pdfImage import generate_pdf 
 from markdownResume import generate_markdown 
 import os
 import re
@@ -44,7 +44,7 @@ def generate_resume_api():
         session['training'] = training
 
         try:
-            pdf_filename = generate_pdf(name, email, projects, education, profile, skills, phone, training)
+            # pdf_filename = generate_pdf(name, email, projects, education, profile, skills, phone, training)
             markdown_content = generate_markdown(name, email, projects, education, profile, skills, phone, training)
 
             # Save markdown content to a file
@@ -57,7 +57,7 @@ def generate_resume_api():
 
         return jsonify({
             "message": "Resume generated successfully!",
-            "download_link": f"/download_resume/{os.path.basename(pdf_filename)}",
+            # "download_link": f"/download_resume/{os.path.basename(pdf_filename)}",
             # "markdown_link": f"/download_resume/{markdown_filename}"
         })
 
