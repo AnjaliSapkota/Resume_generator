@@ -3,39 +3,12 @@ import re
 from flask import Flask, render_template, request, redirect, url_for, session, flash, send_file
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
+from reportlab.lib import utils
 import markdown2
 from markdownResume import generate_markdown
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'supersecretkey')
-
-def sanitize_text(text):
-    return ''.join([i if ord(i) < 128 else ' ' for i in text])
-
-def wrap_text(text, max_width, c, margin, y_position):
-    """Helper function to wrap text within a specified width, handling newlines."""
-    paragraphs = sanitize_text(text).split('\n') 
-    for paragraph in paragraphs:
-        words = paragraph.split(' ')
-        lines = []
-        line = ""
-
-        for word in words:
-            if c.stringWidth(line + word + " ") <= max_width:
-                line += word + " "
-            else:
-                lines.append(line)
-                line = word + " "
-        if line:
-            lines.append(line)
-
-        for wrapped_line in lines:
-            c.drawString(margin, y_position, wrapped_line)
-            y_position -= 15
-
-        y_position -= 10
-
-    return y_position
 
 @app.route('/')
 def index():
@@ -90,16 +63,30 @@ def generate_resume():
         flash(f"Failed to generate resume: {str(e)}", "error")
         return redirect(url_for('index'))
 
+def draw_wrapped_text(c, text, x, y, width, font_name="Helvetica", font_size=12, leading=15):
+    """Draws text wrapped within a certain width and returns the final y position after the text is drawn."""
+    c.setFont(font_name, font_size)
+    text_object = c.beginText(x, y)
+    text_object.setLeading(leading)
+    lines = utils.simpleSplit(text, font_name, font_size, width)
+
+    for line in lines:
+        text_object.textLine(line)
+
+    c.drawText(text_object)
+    
+    return y - len(lines) * leading  # Return the final y position after text is drawn
+
 @app.route('/download_pdf')
 def download_pdf():
-    name = sanitize_text(session.get('name'))
-    email = sanitize_text(session.get('email'))
-    phone = sanitize_text(session.get('phone'))
-    profile = sanitize_text(session.get('profile'))
-    skills = sanitize_text(session.get('skills'))
-    education = sanitize_text(session.get('education'))
-    projects = sanitize_text(session.get('projects'))
-    training = sanitize_text(session.get('training'))
+    name = session.get('name')
+    email = session.get('email')
+    phone = session.get('phone')
+    profile = session.get('profile')
+    skills = session.get('skills')
+    education = session.get('education')
+    projects = session.get('projects')
+    training = session.get('training')
 
     pdf_filename = f"{name.replace(' ', '_')}_resume.pdf"
     pdf_path = os.path.join('static', pdf_filename)
@@ -125,12 +112,13 @@ def download_pdf():
     c.line(margin, y_position, width - margin, y_position)
     y_position -= 30
 
+    profile_width = width - 2 * margin  # Calculate available width for profile text
+
     if profile:
         c.setFont("Helvetica-Bold", 14)
         c.drawString(margin, y_position, "Profile Summary:")
         y_position -= 20
-        c.setFont("Helvetica", 12)
-        y_position = wrap_text(profile, width - 2 * margin, c, margin, y_position)
+        y_position = draw_wrapped_text(c, profile, margin, y_position, profile_width)
         y_position -= 10
 
     if skills:
@@ -138,7 +126,10 @@ def download_pdf():
         c.drawString(margin, y_position, "Skills:")
         y_position -= 20
         c.setFont("Helvetica", 12)
-        y_position = wrap_text(skills, width - 2 * margin, c, margin, y_position)
+        skills_list = skills.splitlines()
+        for skill in skills_list:
+            c.drawString(margin, y_position, f"- {skill.strip()}")
+            y_position -= 15
         y_position -= 10
 
     if education:
@@ -146,7 +137,8 @@ def download_pdf():
         c.drawString(margin, y_position, "Education:")
         y_position -= 20
         c.setFont("Helvetica", 12)
-        y_position = wrap_text(education, width - 2 * margin, c, margin, y_position)
+        for edu in education.splitlines():
+            y_position = draw_wrapped_text(c, edu.strip(), margin, y_position, width - 2 * margin)
         y_position -= 10
 
     if projects:
@@ -154,7 +146,8 @@ def download_pdf():
         c.drawString(margin, y_position, "Projects:")
         y_position -= 20
         c.setFont("Helvetica", 12)
-        y_position = wrap_text(projects, width - 2 * margin, c, margin, y_position)
+        for proj in projects.splitlines():
+            y_position = draw_wrapped_text(c, proj.strip(), margin, y_position, width - 2 * margin)
         y_position -= 10
 
     if training:
@@ -162,7 +155,8 @@ def download_pdf():
         c.drawString(margin, y_position, "Training & Certifications:")
         y_position -= 20
         c.setFont("Helvetica", 12)
-        y_position = wrap_text(training, width - 2 * margin, c, margin, y_position)
+        for cert in training.splitlines():
+            y_position = draw_wrapped_text(c, f"- {cert.strip()}", margin, y_position, width - 2 * margin)
 
     c.save()
 
