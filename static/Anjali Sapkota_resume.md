@@ -7,7 +7,7 @@
 ---
 
 ### Profile Summary
-I am a motivated and proactive 4th-year Computer Engineering student with some experience and a strong interest in software development, as well as a keen interest in data analysis. Keen to pursue a career in these fields, while seeking opportunities to build skills and contribute to innovative projects in a dynamic organization.
+I am a motivated and proactive 4th-year Computer Engineering student with some experience  and a strong interest in software development, as well as a keen interest in data analysis. Keen  to pursue a career in these fields, while seeking opportunities to build skills and contribute to  innovative projects in a dynamic organization.
 
 ### Skills
 - Languages: C, C++, HTML, CSS, JavaScript
@@ -16,11 +16,15 @@ I am a motivated and proactive 4th-year Computer Engineering student with some e
 - Version Control: Git, GitHub
 
 ### Education
-- SOUTHWESTERN STATE COLLEGE Higher Secondary | +2
+- SOUTHWESTERN STATE COLLEGE
+
+Higher Secondary | +2
 
 2018-2021
 
-- KATHMANDU ENGINEERING COLLEGE Bachelors in Computer Engineering
+- KATHMANDU ENGINEERING COLLEGE
+
+Bachelors in Computer Engineering
 
 2021 - Present
 
