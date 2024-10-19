@@ -76,18 +76,15 @@ def download_pdf():
     pdf_filename = f"{name.replace(' ', '_')}_resume.pdf"
     pdf_path = os.path.join('static', pdf_filename)
 
-    # Create the PDF
     c = canvas.Canvas(pdf_path, pagesize=letter)
     width, height = letter
-    margin = 50  # Adjust margins as needed
-    y_position = height - margin  # Track vertical position
+    margin = 50  
+    y_position = height - margin  
 
-    # Title (Name)
     c.setFont("Helvetica-Bold", 24)
     c.drawString(margin, y_position, name)
     y_position -= 30
 
-    # Contact information (Email & Phone)
     c.setFont("Helvetica", 12)
     c.drawString(margin, y_position, f"Email: {email}")
     y_position -= 20
@@ -97,11 +94,9 @@ def download_pdf():
     else:
         y_position -= 20
 
-    # Separator Line
     c.line(margin, y_position, width - margin, y_position)
     y_position -= 30
 
-    # Profile Summary
     if profile:
         c.setFont("Helvetica-Bold", 14)
         c.drawString(margin, y_position, "Profile Summary:")
@@ -112,7 +107,6 @@ def download_pdf():
             y_position -= 15
         y_position -= 10
 
-    # Skills
     if skills:
         c.setFont("Helvetica-Bold", 14)
         c.drawString(margin, y_position, "Skills:")
@@ -124,7 +118,6 @@ def download_pdf():
             y_position -= 15
         y_position -= 10
 
-    # Education
     if education:
         c.setFont("Helvetica-Bold", 14)
         c.drawString(margin, y_position, "Education:")
@@ -135,7 +128,6 @@ def download_pdf():
             y_position -= 15
         y_position -= 10
 
-    # Projects
     if projects:
         c.setFont("Helvetica-Bold", 14)
         c.drawString(margin, y_position, "Projects:")
@@ -146,7 +138,6 @@ def download_pdf():
             y_position -= 15
         y_position -= 10
 
-    # Training & Certifications
     if training:
         c.setFont("Helvetica-Bold", 14)
         c.drawString(margin, y_position, "Training & Certifications:")
@@ -156,7 +147,6 @@ def download_pdf():
             c.drawString(margin, y_position, f"- {cert.strip()}")
             y_position -= 15
 
-    # Save and close PDF
     c.save()
 
     # Send the PDF as a downloadable file
